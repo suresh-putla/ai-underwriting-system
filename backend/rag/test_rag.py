@@ -45,7 +45,7 @@ def test_text_splitting():
     print("\nTesting text splitting...")
 
     try:
-        from langchain.schema import Document
+        from langchain_core.documents import Document
 
         rag = RAGSetup(
             chunk_size=100,
@@ -102,7 +102,7 @@ def test_retrieve_chunks_by_query():
     print("\nTesting chunk retrieval by query...")
 
     try:
-        from langchain.schema import Document
+        from langchain_core.documents import Document
         import shutil
 
         # Create test directory

@@ -1,16 +1,8 @@
 # LOUS - Loan Origination & Underwriting System
 
-**AI Automated Loan Origination Underwriting System**
+**Demo Application - AI-Powered Loan Origination**
 
-A modern, AI-powered web application for processing home mortgage loans with automated underwriting capabilities.
-
-## Features
-
-- **Modern UI**: Professional design with glassmorphism effects, gradient accents, and smooth animations
-- **User Authentication**: Secure login system with role-based access control
-- **Real-time Dashboard**: Live loan portfolio overview with key metrics
-- **AI-Powered**: Ready for AI/ML integration for automated underwriting
-- **Single Container**: Easy deployment with Docker
+A demonstration application that leverages AI to streamline and accelerate loan origination decisions. This modern web platform showcases how artificial intelligence can transform traditional mortgage underwriting processes through intelligent automation and data-driven insights.
 
 ## Tech Stack
 
@@ -138,16 +130,6 @@ The system comes with pre-configured test users:
 - `GET /api/health` - Health check endpoint
 - `POST /api/user-auth` - User authentication
 
-## Design Features
-
-The application features a modern, professional design inspired by contemporary fintech applications:
-
-- **Dark theme** with vibrant cyan/purple gradient accents
-- **Glassmorphism** UI elements with backdrop blur effects
-- **Smooth animations** on scroll and hover
-- **Responsive layout** for mobile and desktop
-- **Professional typography** with clear hierarchy
-- **Modern card designs** with floating effects
 
 ## Development Roadmap
 

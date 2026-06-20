@@ -6,7 +6,7 @@ This script demonstrates how to retrieve relevant chunks using different query m
 import os
 from dotenv import load_dotenv
 from rag_setup import RAGSetup
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 # Load environment variables from .env file
 load_dotenv()

@@ -15,14 +15,16 @@ const LoginPage = ({ onLoginSuccess }) => {
     try {
       const response = await authenticateUser(username, password)
       if (response.success) {
-        // Pass user role to parent component
+        // Pass user role and username to parent component
         const role = response.role || (username.toLowerCase() === 'admin' ? 'admin' : 'user')
-        onLoginSuccess(role)
+        onLoginSuccess(role, response.username)
       } else {
         setError('Invalid credentials')
       }
     } catch (err) {
-      setError(err.message || 'Authentication failed. Please try again.')
+      // Handle error from backend (FastAPI returns {detail: "..."})
+      const errorMessage = err.detail || err.error || err.message || 'Authentication failed. Please try again.'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }

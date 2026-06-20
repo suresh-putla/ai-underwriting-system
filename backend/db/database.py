@@ -16,6 +16,8 @@ class Database:
         """Get database connection"""
         conn = sqlite3.connect(self.db_path)
         conn.row_factory = sqlite3.Row
+        # Enable foreign key constraints (SQLite default is OFF)
+        conn.execute('PRAGMA foreign_keys = ON')
         return conn
 
     def init_database(self):
@@ -37,8 +39,30 @@ class Database:
             )
         ''')
 
+        # Create loan documents table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS LOAN_DOCS (
+                DOC_TYPE TEXT PRIMARY KEY,
+                REQUIRED_FLAG INTEGER NOT NULL DEFAULT 1
+            )
+        ''')
+
+        # Create submitted loan documents table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS SUBMITTED_LOAN_DOCS (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                USER_ID TEXT NOT NULL REFERENCES users(username),
+                DOC_TYPE TEXT NOT NULL REFERENCES LOAN_DOCS(DOC_TYPE),
+                STATUS TEXT NOT NULL DEFAULT 'Evaluating'
+                       CHECK (STATUS IN ('Evaluating','Under Review','Valid','Not Valid'))
+            )
+        ''')
+
         # Create default admin user if not exists
         self._create_default_users(cursor)
+
+        # Seed default loan document types
+        self._seed_loan_docs(cursor)
 
         conn.commit()
         conn.close()
@@ -61,6 +85,24 @@ class Database:
                 )
             except sqlite3.IntegrityError:
                 # User already exists
+                pass
+
+    def _seed_loan_docs(self, cursor):
+        """Seed default loan document types"""
+        default_docs = [
+            ('W2', 1),
+            ('Pay stub', 1),
+            ('Bank Statement', 1),
+        ]
+
+        for doc_type, required_flag in default_docs:
+            try:
+                cursor.execute(
+                    'INSERT INTO LOAN_DOCS (DOC_TYPE, REQUIRED_FLAG) VALUES (?, ?)',
+                    (doc_type, required_flag)
+                )
+            except sqlite3.IntegrityError:
+                # Document type already exists
                 pass
 
     def _hash_password(self, password: str) -> str:
@@ -111,3 +153,18 @@ class Database:
         conn.close()
 
         return dict(user) if user else None
+
+    def get_submitted_docs_by_user(self, user_id: str) -> list[dict]:
+        """Get all submitted loan documents for a specific user"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            'SELECT DOC_TYPE, STATUS FROM SUBMITTED_LOAN_DOCS WHERE USER_ID = ?',
+            (user_id,)
+        )
+
+        rows = cursor.fetchall()
+        conn.close()
+
+        return [dict(row) for row in rows]

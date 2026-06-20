@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from routers import health, auth
+from routers import health, auth, admin
 from api import api as rag_api
 import uvicorn
 from pathlib import Path
@@ -28,6 +28,7 @@ app.add_middleware(
 # Include API routers FIRST
 app.include_router(health.router, prefix="/api", tags=["Health"])
 app.include_router(auth.router, prefix="/api", tags=["Authentication"])
+app.include_router(admin.router, prefix="/api", tags=["Admin"])
 app.include_router(rag_api.router, prefix="/api", tags=["RAG"])
 
 # Mount static files AFTER API routes but BEFORE catch-all

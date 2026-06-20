@@ -21,4 +21,40 @@ export const authenticateUser = async (username, password) => {
   }
 }
 
+// Admin table API functions
+export const getAdminTables = async () => {
+  const response = await apiClient.get('/admin/tables')
+  return response.data
+}
+
+export const getTableSchema = async (tableName) => {
+  const response = await apiClient.get(`/admin/tables/${tableName}/schema`)
+  return response.data
+}
+
+export const getTableRows = async (tableName) => {
+  const response = await apiClient.get(`/admin/tables/${tableName}/rows`)
+  return response.data
+}
+
+export const createTableRow = async (tableName, rowData) => {
+  const response = await apiClient.post(`/admin/tables/${tableName}/rows`, rowData)
+  return response.data
+}
+
+export const deleteTableRow = async (tableName, primaryKey) => {
+  const response = await apiClient.delete(`/admin/tables/${tableName}/rows`, {
+    data: { primary_key: primaryKey }
+  })
+  return response.data
+}
+
+// Borrower API functions
+export const getSubmittedDocs = async (userId) => {
+  const response = await apiClient.get('/submitted-docs', {
+    params: { user_id: userId }
+  })
+  return response.data
+}
+
 export default apiClient
