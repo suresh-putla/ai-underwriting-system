@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment
+.env
+.env.local
+*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Build outputs
+dist/
+build/
+frontend/dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# ChromaDB
+backend/data/chroma/
+backend/chroma_db/
+
+# Python virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python
+*.egg-info/
+.pytest_cache/
+.coverage
+
+# Docker
+.dockerignore
