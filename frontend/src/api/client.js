@@ -51,10 +51,29 @@ export const deleteTableRow = async (tableName, primaryKey) => {
 
 // Borrower API functions
 export const getSubmittedDocs = async (userId) => {
-  const response = await apiClient.get('/submitted-docs', {
-    params: { user_id: userId }
-  })
-  return response.data
+  try {
+    const response = await apiClient.get('/submitted-docs', {
+      params: { user_id: userId }
+    })
+    return response.data
+  } catch (error) {
+    console.error('Error fetching submitted docs:', error)
+    throw error.response?.data || { error: 'Failed to fetch documents' }
+  }
+}
+
+export const updateDocumentStatus = async (userId, docType, status) => {
+  try {
+    const response = await apiClient.put('/document-status', {
+      user_id: userId,
+      doc_type: docType,
+      status: status
+    })
+    return response.data
+  } catch (error) {
+    console.error('Error updating document status:', error)
+    throw error.response?.data || { error: 'Failed to update document status' }
+  }
 }
 
 export default apiClient

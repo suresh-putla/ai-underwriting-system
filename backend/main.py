@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from routers import health, auth, admin
 from api import api as rag_api
+from api import api_agents
 import uvicorn
 from pathlib import Path
 
@@ -30,6 +31,7 @@ app.include_router(health.router, prefix="/api", tags=["Health"])
 app.include_router(auth.router, prefix="/api", tags=["Authentication"])
 app.include_router(admin.router, prefix="/api", tags=["Admin"])
 app.include_router(rag_api.router, prefix="/api", tags=["RAG"])
+app.include_router(api_agents.router, prefix="/api", tags=["Agents"])
 
 # Mount static files AFTER API routes but BEFORE catch-all
 if frontend_dist.exists():

@@ -40,9 +40,6 @@ RUN pip install --no-cache-dir -r backend/requirements.txt
 # Copy backend source
 COPY backend/ ./backend/
 
-# Copy test file for debugging
-COPY test.html ./test.html
-
 # Copy built frontend from previous stage
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 

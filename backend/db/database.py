@@ -54,7 +54,7 @@ class Database:
                 USER_ID TEXT NOT NULL REFERENCES users(username),
                 DOC_TYPE TEXT NOT NULL REFERENCES LOAN_DOCS(DOC_TYPE),
                 STATUS TEXT NOT NULL DEFAULT 'Evaluating'
-                       CHECK (STATUS IN ('Evaluating','Under Review','Valid','Not Valid'))
+                       CHECK (STATUS IN ('Pending','Evaluating','Under Review','Valid','Not Valid'))
             )
         ''')
 
@@ -168,3 +168,84 @@ class Database:
         conn.close()
 
         return [dict(row) for row in rows]
+
+    def get_required_documents(self) -> list[dict]:
+        """
+        Get all required document types.
+
+        Returns:
+            List of dicts with doc_type and required_flag for all required documents
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            'SELECT DOC_TYPE, REQUIRED_FLAG FROM LOAN_DOCS WHERE REQUIRED_FLAG = 1'
+        )
+
+        rows = cursor.fetchall()
+        conn.close()
+
+        return [{"doc_type": row["DOC_TYPE"], "required_flag": row["REQUIRED_FLAG"]} for row in rows]
+
+    def get_pending_documents(self, username: str) -> list[dict]:
+        """
+        Get required documents that the user has not yet successfully submitted.
+
+        A document is considered pending if:
+        - It's marked as required (REQUIRED_FLAG = 1)
+        - AND the user has no 'Valid' submission for it
+
+        Args:
+            username: Username to check pending documents for
+
+        Returns:
+            List of dicts with doc_type for each pending document
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+
+        # LEFT JOIN to find required docs with no Valid submission
+        cursor.execute('''
+            SELECT ld.DOC_TYPE
+            FROM LOAN_DOCS ld
+            LEFT JOIN SUBMITTED_LOAN_DOCS sld
+                ON ld.DOC_TYPE = sld.DOC_TYPE
+                AND sld.USER_ID = ?
+                AND sld.STATUS = 'Valid'
+            WHERE ld.REQUIRED_FLAG = 1
+                AND sld.ID IS NULL
+        ''', (username,))
+
+        rows = cursor.fetchall()
+        conn.close()
+
+        return [{"doc_type": row["DOC_TYPE"]} for row in rows]
+
+    def update_document_status(self, user_id: str, doc_type: str, status: str) -> bool:
+        """
+        Update the status of a submitted document.
+
+        Args:
+            user_id: Username of the document owner
+            doc_type: Type of document to update
+            status: New status ('Evaluating', 'Under Review', 'Valid', 'Not Valid')
+
+        Returns:
+            True if update was successful, False otherwise
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute(
+                'UPDATE SUBMITTED_LOAN_DOCS SET STATUS = ? WHERE USER_ID = ? AND DOC_TYPE = ?',
+                (status, user_id, doc_type)
+            )
+            conn.commit()
+            success = cursor.rowcount > 0
+            conn.close()
+            return success
+        except Exception as e:
+            conn.close()
+            raise e

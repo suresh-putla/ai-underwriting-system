@@ -4,7 +4,7 @@ import SubmittedDocuments from '../components/SubmittedDocuments'
 import ApplicationTracker from '../components/ApplicationTracker'
 import CommentsTimeline from '../components/CommentsTimeline'
 import FloatingChatButton from '../components/FloatingChatButton'
-import { getSubmittedDocs } from '../api/client'
+import { getSubmittedDocs, updateDocumentStatus } from '../api/client'
 
 const BorrowerDashboard = ({ username, onLogout }) => {
   const [documents, setDocuments] = useState([])
@@ -16,7 +16,10 @@ const BorrowerDashboard = ({ username, onLogout }) => {
   // Fetch submitted documents from API
   useEffect(() => {
     const fetchSubmittedDocs = async () => {
-      if (!username) return
+      if (!username) {
+        setDocumentsLoading(false)
+        return
+      }
 
       try {
         setDocumentsLoading(true)
@@ -36,7 +39,8 @@ const BorrowerDashboard = ({ username, onLogout }) => {
         setDocuments(transformedDocs)
       } catch (err) {
         console.error('Error fetching submitted documents:', err)
-        setDocumentsError(err.message || 'Failed to load documents')
+        const errorMessage = err.error || err.message || err.detail || 'Failed to load documents'
+        setDocumentsError(errorMessage)
       } finally {
         setDocumentsLoading(false)
       }
@@ -82,8 +86,36 @@ const BorrowerDashboard = ({ username, onLogout }) => {
     // In a real app, you would upload to server and update documents state
   }
 
-  const handleRemoveDocument = (documentId) => {
-    setDocuments(documents.filter(doc => doc.id !== documentId))
+  const handleRemoveDocument = async (documentId) => {
+    // Find the document to remove
+    const docToRemove = documents.find(doc => doc.id === documentId)
+    if (!docToRemove) return
+
+    try {
+      // Update status to 'Pending' in the database
+      await updateDocumentStatus(username, docToRemove.type, 'Pending')
+
+      // Reload the entire submitted documents section
+      setDocumentsLoading(true)
+      setDocumentsError(null)
+      const response = await getSubmittedDocs(username)
+
+      const transformedDocs = (response.documents || []).map((doc, index) => ({
+        id: index + 1,
+        type: doc.DOC_TYPE,
+        filename: doc.DOC_TYPE,
+        status: doc.STATUS,
+        uploadedAt: new Date().toISOString().split('T')[0]
+      }))
+
+      setDocuments(transformedDocs)
+    } catch (err) {
+      console.error('Error removing document:', err)
+      const errorMessage = err.error || err.message || err.detail || 'Failed to remove document'
+      setDocumentsError(errorMessage)
+    } finally {
+      setDocumentsLoading(false)
+    }
   }
 
   return (

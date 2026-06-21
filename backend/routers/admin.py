@@ -437,3 +437,53 @@ async def delete_row(table_name: str, request: DeleteRowRequest):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Database error: {str(e)}"
         )
+
+
+# ========== Document Status Update Endpoint ==========
+
+class UpdateDocumentStatusRequest(BaseModel):
+    """Request model for updating document status"""
+    user_id: str
+    doc_type: str
+    status: str
+
+
+@router.put("/document-status")
+async def update_document_status(request: UpdateDocumentStatusRequest):
+    """
+    Update the status of a submitted document.
+
+    Valid statuses: 'Pending', 'Evaluating', 'Under Review', 'Valid', 'Not Valid'
+    """
+    valid_statuses = ['Pending', 'Evaluating', 'Under Review', 'Valid', 'Not Valid']
+
+    if request.status not in valid_statuses:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid status. Must be one of: {', '.join(valid_statuses)}"
+        )
+
+    db = Database()
+
+    try:
+        success = db.update_document_status(request.user_id, request.doc_type, request.status)
+
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"No document found for user '{request.user_id}' with type '{request.doc_type}'"
+            )
+
+        return {
+            "success": True,
+            "message": f"Document status updated to '{request.status}'",
+            "user_id": request.user_id,
+            "doc_type": request.doc_type,
+            "status": request.status
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update document status: {str(e)}"
+        )
