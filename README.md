@@ -130,6 +130,16 @@ The system comes with pre-configured test users:
 - `GET /api/health` - Health check endpoint
 - `POST /api/user-auth` - User authentication
 
+## Design Features
+
+The application features a modern, professional design inspired by contemporary fintech applications:
+
+- **Dark theme** with vibrant cyan/purple gradient accents
+- **Glassmorphism** UI elements with backdrop blur effects
+- **Smooth animations** on scroll and hover
+- **Responsive layout** for mobile and desktop
+- **Professional typography** with clear hierarchy
+- **Modern card designs** with floating effects
 
 ## Development Roadmap
 

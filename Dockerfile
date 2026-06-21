@@ -17,9 +17,6 @@ COPY frontend/ ./
 # Build frontend
 RUN npm run build
 
-# Verify build output
-RUN ls -la dist/ && ls -la dist/assets/
-
 # Stage 2: Backend with Python
 FROM python:3.11-slim
 
@@ -42,9 +39,6 @@ COPY backend/ ./backend/
 
 # Copy built frontend from previous stage
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
-
-# Verify frontend files were copied
-RUN ls -la ./frontend/dist/ && echo "Frontend files copied successfully"
 
 # Create necessary directories
 RUN mkdir -p backend/db backend/data/chroma

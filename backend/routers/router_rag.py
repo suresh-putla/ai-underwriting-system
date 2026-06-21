@@ -122,7 +122,7 @@ def get_rag_setup() -> RAGSetup:
     return rag_setup
 
 
-@router.post("/rag-init", response_model=StatusResponse, summary="Initialize RAG System")
+@router.post("/rag/init", response_model=StatusResponse, summary="Initialize RAG System")
 async def initialize(config: InitializeRequest):
     """
     Initialize the RAG system with specified configuration.
@@ -188,7 +188,7 @@ async def initialize(config: InitializeRequest):
         raise HTTPException(status_code=500, detail=f"Failed to initialize RAG system: {str(e)}")
 
 
-@router.get("/rag-status", response_model=StatusResponse, summary="Check RAG System Status")
+@router.get("/rag/status", response_model=StatusResponse, summary="Check RAG System Status")
 async def get_status():
     """
     Check the current status of the RAG system.
@@ -211,7 +211,7 @@ async def get_status():
     )
 
 
-@router.post("/rag-search", response_model=SearchResponse, summary="RAG Search")
+@router.post("/rag/search", response_model=SearchResponse, summary="RAG Search")
 async def rag_search(search_query: SearchQuery):
     """
     Perform similarity search on the vector store.
@@ -245,7 +245,7 @@ async def rag_search(search_query: SearchQuery):
         raise HTTPException(status_code=500, detail=f"RAG search failed: {str(e)}")
 
 
-@router.post("/rag-search-with-score", response_model=SearchWithScoreResponse, summary="RAG Search with Scores")
+@router.post("/rag/search-with-score", response_model=SearchWithScoreResponse, summary="RAG Search with Scores")
 async def rag_search_with_score(search_query: SearchQuery):
     """
     Perform similarity search with relevance scores.
@@ -281,7 +281,7 @@ async def rag_search_with_score(search_query: SearchQuery):
         raise HTTPException(status_code=500, detail=f"RAG search with score failed: {str(e)}")
 
 
-@router.get("/rag-search", response_model=SearchResponse, summary="RAG Search (GET)")
+@router.get("/rag/search", response_model=SearchResponse, summary="RAG Search (GET)")
 async def rag_search_get(
     query: str = Query(..., description="Search query text", min_length=1),
     k: int = Query(default=4, description="Number of results to return", ge=1, le=20)
@@ -295,7 +295,7 @@ async def rag_search_get(
     return await rag_search(search_query)
 
 
-@router.get("/rag-search-with-score", response_model=SearchWithScoreResponse, summary="RAG Search with Scores (GET)")
+@router.get("/rag/search-with-score", response_model=SearchWithScoreResponse, summary="RAG Search with Scores (GET)")
 async def rag_search_with_score_get(
     query: str = Query(..., description="Search query text", min_length=1),
     k: int = Query(default=4, description="Number of results to return", ge=1, le=20)
@@ -309,7 +309,7 @@ async def rag_search_with_score_get(
     return await rag_search_with_score(search_query)
 
 
-@router.post("/rag-llm-search", summary="RAG + LLM Streaming Search")
+@router.post("/rag/llm-search", summary="RAG + LLM Streaming Search")
 async def rag_llm_search(search_query: RAGLLMSearchQuery):
     """
     Perform RAG similarity search and generate an LLM response with streaming.

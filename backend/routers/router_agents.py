@@ -30,7 +30,7 @@ class DocsSubmissionResponse(BaseModel):
     message: str
 
 
-@router.post("/docs-submission", response_model=DocsSubmissionResponse)
+@router.post("/agents/submit-docs", response_model=DocsSubmissionResponse)
 async def docs_submission(request: DocsSubmissionRequest) -> DocsSubmissionResponse:
     """
     Check document submission status for a user.

@@ -27,7 +27,7 @@ const RAGConfiguration = () => {
     setStatus({ type: '', message: '' })
 
     try {
-      const response = await apiClient.post('/rag-init', config)
+      const response = await apiClient.post('/rag/init', config)
       setStatus({
         type: 'success',
         message: response.data.message || 'RAG system initialized successfully!'

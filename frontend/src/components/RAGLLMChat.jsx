@@ -42,7 +42,7 @@ const RAGLLMChat = () => {
     }])
 
     try {
-      const response = await fetch(`${apiClient.defaults.baseURL}/rag-llm-search`, {
+      const response = await fetch(`${apiClient.defaults.baseURL}/rag/llm-search`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

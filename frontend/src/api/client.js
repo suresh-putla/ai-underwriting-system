@@ -52,7 +52,7 @@ export const deleteTableRow = async (tableName, primaryKey) => {
 // Borrower API functions
 export const getSubmittedDocs = async (userId) => {
   try {
-    const response = await apiClient.get('/submitted-docs', {
+    const response = await apiClient.get('/borrower/get-docs', {
       params: { user_id: userId }
     })
     return response.data
@@ -64,7 +64,7 @@ export const getSubmittedDocs = async (userId) => {
 
 export const updateDocumentStatus = async (userId, docType, status) => {
   try {
-    const response = await apiClient.put('/document-status', {
+    const response = await apiClient.put('/borrower/update-doc-status', {
       user_id: userId,
       doc_type: docType,
       status: status

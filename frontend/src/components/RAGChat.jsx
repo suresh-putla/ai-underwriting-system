@@ -29,7 +29,7 @@ const RAGChat = () => {
     setLoading(true)
 
     try {
-      const response = await apiClient.post('/rag-search', {
+      const response = await apiClient.post('/rag/search', {
         query: userQuery,
         k: 4
       })
